@@ -16,7 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate{
     private var hotKeyRef: EventHotKeyRef?
     private let modeKey = "privacy.mode"
     private var currentMode: PrivacyMode = .none
-    
+    private let presenceDetector = PresenceDetector()
     
     
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -28,6 +28,26 @@ class AppDelegate: NSObject, NSApplicationDelegate{
             NSApp.terminate(nil)
             return
         }
+        
+        presenceDetector.onUserPresent = { [weak self] in
+            guard let self = self else { return }
+            if self.currentMode != .none {
+                self.currentMode = .none
+                self.hideOverlay()
+                self.statusItem.menu = self.buildMenu()
+            }
+        }
+
+        presenceDetector.onUserAbsent = { [weak self] in
+            guard let self = self else { return }
+            if self.currentMode == .none {
+                self.currentMode = .dark   // 또는 lastSelectedMode
+                self.showOverlayOnAllScreens()
+                self.statusItem.menu = self.buildMenu()
+            }
+        }
+
+        presenceDetector.start()
         
         loadMode()
         setupStatusItem()
