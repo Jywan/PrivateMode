@@ -9,9 +9,14 @@ import SwiftUI
 
 @main
 struct PrivateModeApp: App {
+    
+    
+    // AppDelegate 와 연결 (AppKit 기능 사용)
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate: AppDelegate
+    
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+        Settings {
+            EmptyView()
         }
     }
 }
